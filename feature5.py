@@ -26,10 +26,10 @@ class Feature5:
             "N066D_1": {"essScPairId": 2225, "essScLocalId": 23},
             
             # N066_2
-            "N066A_2": {"essScPairId": 2225, "essScLocalId": 23},
-            "N066B_2": {"essScPairId": 2226, "essScLocalId": 24},
-            "N066C_2": {"essScPairId": 2227, "essScLocalId": 25},
-            "N066D_2": {"essScPairId": 2228, "essScLocalId": 26},
+            "N066A_2": {"essScPairId": 2226, "essScLocalId": 24},
+            "N066B_2": {"essScPairId": 2227, "essScLocalId": 25},
+            "N066C_2": {"essScPairId": 2228, "essScLocalId": 26},
+            "N066D_2": {"essScPairId": 2229, "essScLocalId": 27},
             
             # N002_1
             "N002A_1": {"essScPairId": 3322, "essScLocalId": 30},
@@ -38,10 +38,10 @@ class Feature5:
             "N002D_1": {"essScPairId": 3325, "essScLocalId": 33},
             
             # N002_2
-            "N002A_2": {"essScPairId": 3325, "essScLocalId": 33},
-            "N002B_2": {"essScPairId": 3326, "essScLocalId": 34},
-            "N002C_2": {"essScPairId": 3327, "essScLocalId": 35},
-            "N002D_2": {"essScPairId": 3328, "essScLocalId": 36},
+            "N002A_2": {"essScPairId": 3326, "essScLocalId": 34},
+            "N002B_2": {"essScPairId": 3327, "essScLocalId": 35},
+            "N002C_2": {"essScPairId": 3328, "essScLocalId": 36},
+            "N002D_2": {"essScPairId": 3329, "essScLocalId": 37},
             
             # N005_1
             "N005A_1": {"essScPairId": 1122, "essScLocalId": 10},
@@ -50,10 +50,10 @@ class Feature5:
             "N005D_1": {"essScPairId": 1125, "essScLocalId": 13},
             
             # N005_2
-            "N005A_2": {"essScPairId": 1125, "essScLocalId": 13},
-            "N005B_2": {"essScPairId": 1126, "essScLocalId": 14},
-            "N005C_2": {"essScPairId": 1127, "essScLocalId": 15},
-            "N005D_2": {"essScPairId": 1128, "essScLocalId": 16},
+            "N005A_2": {"essScPairId": 1126, "essScLocalId": 14},
+            "N005B_2": {"essScPairId": 1127, "essScLocalId": 15},
+            "N005C_2": {"essScPairId": 1128, "essScLocalId": 16},
+            "N005D_2": {"essScPairId": 1129, "essScLocalId": 17},
         }
         
         # FIXED: Correct placeholder names matching template EXACTLY
@@ -382,3 +382,4 @@ class Feature5:
             import traceback
             traceback.print_exc()
             raise
+
