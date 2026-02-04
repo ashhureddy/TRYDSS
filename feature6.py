@@ -1,7 +1,7 @@
 #==============================================================================
-# FEATURE 6: TEMPLATE GENERATION WITH STANDARD TEMPLATE
+# FEATURE 6: TEMPLATE GENERATION WITH DYNAMIC SELECTION
 #==============================================================================
-# Description: Generate notepad files using single standard.txt template
+# Description: Generate notepad files selecting template based on Delta sector
 # Brand: MASTEC
 # Developer: AKSHATHA KALLUR
 #==============================================================================
@@ -10,7 +10,7 @@ import os
 import re
 
 class Feature6:
-    """Feature 6: Template Generation with Standard Template"""
+    """Feature 6: Template Generation with Dynamic Selection"""
     
     def __init__(self, config, mapped_variables):
         """Initialize Feature 6"""
@@ -19,7 +19,15 @@ class Feature6:
         self.templates_folder = "templates"
         self.output_folder = "output_templates"
         self.generated_files = []
-        self.standard_template_path = os.path.join(self.templates_folder, "standard.txt")
+        
+        # Define paths for both templates
+        # standard.txt = 4-Sector (Delta)
+        # stand.txt = 3-Sector (No Delta)
+        self.template_paths = {
+            "4_sector": os.path.join(self.templates_folder, "standard.txt"),
+            "3_sector": os.path.join(self.templates_folder, "stand.txt")
+        }
+        self.loaded_templates = {}
     
     def ensure_folders_exist(self):
         """Ensure templates and output folders exist"""
@@ -31,65 +39,79 @@ class Feature6:
             os.makedirs(self.output_folder)
             print(f"   ✅ Created '{self.output_folder}' folder")
     
-    def read_standard_template(self):
-        """Read the standard template file"""
-        try:
-            if not os.path.exists(self.standard_template_path):
-                raise FileNotFoundError(f"Standard template 'standard.txt' not found in '{self.templates_folder}' folder")
-            
-            with open(self.standard_template_path, 'r', encoding='utf-8') as f:
-                return f.read()
-        except Exception as e:
-            print(f"      ❌ Error reading standard template: {str(e)}")
-            return None
+    def read_templates(self):
+        """Read both template files into memory"""
+        print("      Loading templates...")
+        
+        for key, path in self.template_paths.items():
+            try:
+                if os.path.exists(path):
+                    with open(path, 'r', encoding='utf-8') as f:
+                        self.loaded_templates[key] = f.read()
+                    print(f"      ✅ Loaded '{os.path.basename(path)}' ({key})")
+                else:
+                    print(f"      ⚠️  Template not found: {path}")
+            except Exception as e:
+                print(f"      ❌ Error reading {path}: {str(e)}")
+
+        if not self.loaded_templates:
+            raise FileNotFoundError("No templates could be loaded from templates/ folder")
     
     def replace_placeholders_with_regex(self, template_content, variable_data):
         """
         Replace placeholders using REGEX for EXACT matching
         Sorted by length (longest first) to prevent partial replacements
-        
-        Args:
-            template_content: Template file content
-            variable_data: Dictionary with placeholder → value mappings
-            
-        Returns:
-            tuple: (replaced_content, replacement_count)
         """
         replaced_content = template_content
         replacement_count = 0
         
-        # CRITICAL: Sort by length (longest first) to prevent partial matches
+        # Sort by length (longest first)
         sorted_placeholders = sorted(
             variable_data.items(),
             key=lambda x: len(x[0]),
             reverse=True
         )
         
-        print(f"         🔍 Processing {len(sorted_placeholders)} placeholders...")
-        
         for placeholder, value in sorted_placeholders:
-            # Convert value to string
+            # Convert value to string (handle None)
             value_str = str(value) if value is not None else ""
             
             # Use regex with escaped pattern for exact matching
             pattern = re.escape(placeholder)
             
-            # Count matches
-            matches = list(re.finditer(pattern, replaced_content))
-            occurrences = len(matches)
-            
-            if occurrences > 0:
-                # Replace ALL occurrences
+            # Perform replacement
+            # Only replace if the placeholder actually exists in the specific template
+            if re.search(pattern, replaced_content):
                 replaced_content = re.sub(pattern, value_str, replaced_content)
-                replacement_count += occurrences
-                
-                if occurrences == 1:
-                    print(f"         • {placeholder}: 1 occurrence → '{value_str}'")
-                else:
-                    print(f"         • {placeholder}: {occurrences} occurrences → '{value_str}'")
+                replacement_count += 1
         
         return replaced_content, replacement_count
     
+    def detect_template_type(self, variable_data):
+        """
+        Determine if we should use the 3-sector or 4-sector template
+        based on the presence of Delta data.
+        """
+        # Check specific Delta placeholders
+        # These keys must match what Feature 5 produces exactly
+        delta_keys = [
+            "LTE_cellidD", 
+            "xx5G_celllocalidDxx", 
+            "xx5G_NRSectorCarrier_Deltaxx",
+            "essScPairId_D"
+        ]
+        
+        has_delta = False
+        for key in delta_keys:
+            if variable_data.get(key) is not None:
+                has_delta = True
+                break
+        
+        if has_delta:
+            return "4_sector", "standard.txt"
+        else:
+            return "3_sector", "stand.txt"
+
     def generate_output_file(self, variable_name, content):
         """Generate output file with replaced content"""
         output_filename = f"{variable_name}_output.txt"
@@ -103,38 +125,34 @@ class Feature6:
             print(f"      ❌ Error writing output file: {str(e)}")
             return None
     
-    def process_variable(self, variable_name, variable_data, template_content):
-        """
-        Process a single variable using the standard template
-        
-        Args:
-            variable_name: Variable name (e.g., "N002_1")
-            variable_data: Variable data with placeholder mappings
-            template_content: Standard template content
-            
-        Returns:
-            dict: Information about generated file
-        """
+    def process_variable(self, variable_name, variable_data):
+        """Process a single variable"""
         print(f"\n   📌 Processing '{variable_name}'...")
-        print(f"      ✅ Using standard.txt template")
         
-        # Replace placeholders using REGEX
-        print(f"      🔄 Replacing placeholders (REGEX mode - longest first)...")
+        # 1. Determine which template to use
+        template_key, template_filename = self.detect_template_type(variable_data)
+        
+        # 2. Get template content
+        if template_key not in self.loaded_templates:
+             print(f"      ❌ Template '{template_filename}' required but not loaded. Skipping.")
+             return None
+             
+        template_content = self.loaded_templates[template_key]
+        print(f"      ✅ Detected {template_key.replace('_', ' ').title()} -> Using '{template_filename}'")
+        
+        # 3. Replace placeholders
         replaced_content, replacement_count = self.replace_placeholders_with_regex(
             template_content,
             variable_data
         )
         
-        print(f"      ✅ Replaced {replacement_count} placeholder occurrence(s)")
-        
-        # Generate output
+        # 4. Generate output
         output_path = self.generate_output_file(variable_name, replaced_content)
         
         if output_path:
-            print(f"      ✅ Generated: {os.path.basename(output_path)}")
             return {
                 "variable_name": variable_name,
-                "template_used": "standard.txt",
+                "template_used": template_filename,
                 "output_file": output_path,
                 "replacements": replacement_count
             }
@@ -168,25 +186,17 @@ class Feature6:
             self.ensure_folders_exist()
             print()
             
-            print("📋 Step 2: Loading standard template")
+            print("📋 Step 2: Loading templates")
             print("-" * 80)
-            
-            # Read the standard template ONCE
-            template_content = self.read_standard_template()
-            
-            if not template_content:
-                raise FileNotFoundError("Could not load standard.txt template")
-            
-            print(f"   ✅ Loaded 'standard.txt': {len(template_content)} characters")
+            self.read_templates()
             print()
             
-            print("🔄 Step 3: Generating output files from standard template")
+            print("🔄 Step 3: Generating output files")
             print("-" * 80)
             print(f"   Processing {len(self.mapped_variables)} variable(s)...")
             
-            # Process each variable using the SAME standard template
             for var_name, var_data in self.mapped_variables.items():
-                result = self.process_variable(var_name, var_data, template_content)
+                result = self.process_variable(var_name, var_data)
                 if result:
                     self.generated_files.append(result)
             
@@ -194,7 +204,6 @@ class Feature6:
             print("=" * 80)
             print(f"✅ Generation complete: {len(self.generated_files)}/{len(self.mapped_variables)} successful")
             
-            # Display summary
             self.display_summary()
             
             return self.generated_files
@@ -204,4 +213,3 @@ class Feature6:
             import traceback
             traceback.print_exc()
             raise
-
