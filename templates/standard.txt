@@ -237,16 +237,16 @@ cmedit get xxMMBB_Primary_Node_Namexx NRCellDU.(NRCellDUId,ssboffset,ssbduration
 
 #### Update essScPairId & essScLocalId
 
-cmedit set xxMMBB_Primary_Node_Namexx NRSectorCarrier.(NRSectorCarrierId==*N00XA_1) essScPairId:essScPairId_A,essScLocalId:essScLocalId_A
+cmedit set xxMMBB_Primary_Node_Namexx NRSectorCarrier.(NRSectorCarrierId==xx5G_NRSectorCarrier_Alphaxx) essScPairId:essScPairId_A,essScLocalId:essScLocalId_A
 cmedit set xxMMBB_Primary_Node_Namexx SectorCarrier.(SectorCarrierId==xxLTE_SectorCarrier_No_Alphaxx) essScPairId:essScPairId_A,essScLocalId:essScLocalId_A
 
-cmedit set xxMMBB_Primary_Node_Namexx NRSectorCarrier.(NRSectorCarrierId==*N00XB_1) essScPairId:essScPairId_B,essScLocalId:essScLocalId_B
+cmedit set xxMMBB_Primary_Node_Namexx NRSectorCarrier.(NRSectorCarrierId==xx5G_NRSectorCarrier_Betaxx) essScPairId:essScPairId_B,essScLocalId:essScLocalId_B
 cmedit set xxMMBB_Primary_Node_Namexx SectorCarrier.(SectorCarrierId==xxLTE_SectorCarrier_No_Betaxx) essScPairId:essScPairId_B,essScLocalId:essScLocalId_B
 
-cmedit set xxMMBB_Primary_Node_Namexx NRSectorCarrier.(NRSectorCarrierId==*N00XC_1) essScPairId:essScPairId_C,essScLocalId:essScLocalId_C
+cmedit set xxMMBB_Primary_Node_Namexx NRSectorCarrier.(NRSectorCarrierId==xx5G_NRSectorCarrier_Gammaxx) essScPairId:essScPairId_C,essScLocalId:essScLocalId_C
 cmedit set xxMMBB_Primary_Node_Namexx SectorCarrier.(SectorCarrierId==xxLTE_SectorCarrier_No_Gammaxx) essScPairId:essScPairId_C,essScLocalId:essScLocalId_C
 
-cmedit set xxMMBB_Primary_Node_Namexx NRSectorCarrier.(NRSectorCarrierId==*N00XD_1) essScPairId:essScPairId_D,essScLocalId:essScLocalId_D
+cmedit set xxMMBB_Primary_Node_Namexx NRSectorCarrier.(NRSectorCarrierId==xx5G_NRSectorCarrier_Deltaxx) essScPairId:essScPairId_D,essScLocalId:essScLocalId_D
 cmedit set xxMMBB_Primary_Node_Namexx SectorCarrier.(SectorCarrierId==xxLTE_SectorCarrier_No_Deltaxx) essScPairId:essScPairId_D,essScLocalId:essScLocalId_D
 
 
@@ -409,3 +409,4 @@ Note: Podt DSS Activation while Unlocking the DSS Cells, First the DSS NR Cells 
 ###################################
 ## End of DSS Activation Process ##
 ###################################
+
